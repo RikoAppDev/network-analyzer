@@ -1,0 +1,18 @@
+protocol_filters:
+  - HTTP
+  - HTTPS
+  - TELNET
+  - SSH
+  - FTP-CONTROL
+  - FTP-DATA
+  - TFTP
+  - ARP
+  - ICMP
+
+tcp_filters:
+  - HTTP
+  - HTTPS
+  - TELNET
+  - SSH
+  - FTP-CONTROL
+  - FTP-DATA

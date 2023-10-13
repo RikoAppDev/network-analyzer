@@ -1,0 +1,174 @@
+icmp_type:
+  0: Echo Reply
+  3: Destination Unreachable
+  4: Source Quench
+  5: Redirect
+  8: Echo Request
+  9: Router Advertisement
+  10: Router Solicitation
+  11: Time Exceeded
+  12: Parameter Problem
+  13: Timestamp Request
+  14: Timestamp Reply
+  15: Information Request
+  16: Information Reply
+  17: Address Mask Request
+  18: Address Mask Reply
+  30: Traceroute
+  31: Datagram Conversion Error
+  32: Mobile Host Redirect
+  33: IPv6 Where-Are-You
+  34: IPv6 I-Am-Here
+  35: Mobile Registration Request
+  36: Mobile Registration Reply
+  37: Domain Name Request
+  38: Domain Name Reply
+  39: SKIP
+  40: Photuris
+
+tftp_type:
+  1: Read request (1)
+  2: Write request (2)
+  4: Acknowledgement (4)
+  5: Error code (5)
+
+arp_opcode:
+  1: REQUEST
+  2: REPLY
+
+wellknown_ports:
+  20: FTP-DATA
+  21: FTP-CONTROL
+  22: SSH
+  23: TELNET
+  25: SMTP
+  53: DNS
+  80: HTTP
+  110: POP3
+  119: NNTP
+  143: IMAP
+  179: BGP
+  389: LDAP
+  443: HTTPS
+  123: TIME
+  67: DHCP
+  68: DHCP
+  69: TFTP
+  137: NETBIOS-NS
+  138: NETBIOS-DGM
+  139: NETBIOS-SSN
+  1900: SSDP
+  161: SNMP
+  162: SNMP
+  514: SYSLOG
+  520: RIP
+  711: DB-LSP-DISC
+  5353: MDNS
+  33434: TRACEROUTE
+
+transport_protocol:
+  0x01: ICMP
+  0x02: IGMP
+  0x06: TCP
+  0x11: UDP
+  0x67: PIM
+
+sap:
+  0x00: NULL LSAP
+  0x02: LLC Sub-Layer Management
+  0x04: SNA Path Control
+  0x06: TCP/IP
+  0x08: SNA
+  0x0C: SNA
+  0x0E: PROWAY (IEC955) Network Management and Initialization
+  0x10: NetWare (unofficial?)
+  0x14: ISO Network Layer (OSLAN 1)
+  0x18: Texas Instruments
+  0x20: ISO Network Layer (unofficial?)
+  0x34: ISO Network Layer (unofficial?)
+  0x40: SNA
+  0x42: STP
+  0x4E: EIA RS-511 Manufacturing Message Service
+  0x54: ISO Network Layer (OSLAN 2)
+  0x7E: ISO 8208 (X.25 over 802.2)
+  0x80: XNS
+  0x82: BACnet
+  0x86: Nestar
+  0x8E: PROWAY (IEC955) Active Station List Maintenance
+  0x98: ARP
+  0xAA: SNAP
+  0xB4: HP JetDirect Printer
+  0xBA: Banyan Vines
+  0xBC: Banyan Vines
+  0xE0: NetWare
+  0xF0: NETBIOS
+  0xF4: IBM Net Management
+  0xF8: HP Extended LLC
+  0xFA: Ungermann-Bass
+  0xFC: Remote Program Load
+  0xFE: ISO Network Layer
+  0xFF: Global LSAP
+  0x8137: IPX
+
+pid:
+  0x809B: AppleTalk
+  0x010B: PVSTP+
+  0x2000: CDP
+  0x2004: DTP
+
+ether_types:
+  0x0800: IPv4
+  0x0806: ARP
+  0x0842: Wake-on-LAN[8]
+  0x22F0: Au:dio Video Transport Protocol (AVTP)
+  0x22F3: IETF TRILL Protocol
+  0x22EA: Stream Reservation Protocol
+  0x6002: DEC MOP RC
+  0x6003: DECnet Phase IV, DNA Routing
+  0x6004: DEC LAT
+  0x8035: Reverse Address Resolution Protocol (RARP)
+  0x809B: AppleTalk
+  0x80F3: AppleTalk Address Resolution Protocol (AARP)
+  0x8100: VLAN-tagged frame (IEEE 802.1Q) and Shortest Path Bridging IEEE 802.1aq with NNI compatibility[9]
+  0x8102: Simple Loop Prevention Protocol (SLPP)
+  0x8103: Virtual Link Aggregation Control Protocol (VLACP)
+  0x8137: IPX
+  0x8204: QNX Qnet
+  0x86DD: IPv6
+  0x8808: Ethernet flow control
+  0x8809: Ethernet Slow Protocols[10] such as the Link Aggregation Control Protocol (LACP)
+  0x8819: CobraNet
+  0x8847: MPLS unicast
+  0x8848: MPLS multicast
+  0x8863: PPPoE Discovery Stage
+  0x8864: PPPoE Session Stage
+  0x887B: HomePlug 1.0 MME
+  0x888E: EAP over LAN (IEEE 802.1X)
+  0x8892: PROFINET Protocol
+  0x889A: HyperSCSI (SCSI over Ethernet)
+  0x88A2: ATA over Ethernet
+  0x88A4: EtherCAT Protocol
+  0x88A8: Service VLAN tag identifier (S-Tag) on Q-in-Q tunnel
+  0x88AB: Ethernet Powerlink[citation needed]
+  0x88B8: GOOSE (Generic Object Oriented Substation event)
+  0x88B9: GSE (Generic Substation Events) Management Services
+  0x88BA: SV (Sampled Value Transmission)
+  0x88BF: MikroTik RoMON (unofficial)
+  0x88CC: LLDP
+  0x88CD: SERCOS III
+  0x88E1: HomePlug Green PHY
+  0x88E3: Media Redundancy Protocol (IEC62439-2)
+  0x88E5: IEEE 802.1AE MAC security (MACsec)
+  0x88E7: Provider Backbone Bridges (PBB) (IEEE 802.1ah)
+  0x88F7: Precision Time Protocol (PTP) over IEEE 802.3 Ethernet
+  0x88F8: NC-SI
+  0x88FB: Parallel Redundancy Protocol (PRP)
+  0x8902: IEEE 802.1ag Connectivity Fault Management (CFM) Protocol / ITU-T Recommendation Y.1731 (OAM)
+  0x8906: Fibre Channel over Ethernet (FCoE)
+  0x8914: FCoE Initialization Protocol
+  0x8915: RDMA over Converged Ethernet (RoCE)
+  0x891D: TTEthernet Protocol Control Frame (TTE)
+  0x893a: 1905.1 IEEE Protocol
+  0x892F: High-availability Seamless Redundancy (HSR)
+  0x9000: ECTP
+  0xF1C1: Redundancy Tag (IEEE 802.1CB Frame Replication and Elimination for Reliability)
