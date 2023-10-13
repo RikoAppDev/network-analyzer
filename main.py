@@ -435,14 +435,13 @@ elif filter_protocol == "TFTP":
         if packet.get("protocol") == "UDP":
             packet_data = reverse_formatted_hexdump(packet.get("hexa_frame"))
             if packet.get("app_protocol") == "TFTP":
-                counter = 0
+                counter = 1
                 end_of_comm = False
                 offset = get_ip_header_offset()
 
                 tftp_type = "".join(f"{byte:02X}" for byte in packet_data[42 + offset:44 + offset])
 
                 communication = {
-                    "state": "PARTIAL",
                     "tftp_type": options_info_data["tftp_type"][int(tftp_type, 16)],
                     "src_ip": packet.get("src_ip"),
                     "dst_ip": packet.get("dst_ip"),
@@ -465,10 +464,10 @@ elif filter_protocol == "TFTP":
                     if comm.get("data_size") == -1:
                         if comm.get("tftp_type") == options_info_data["tftp_type"][int("01", 16)] and counter == 1:
                             data_size = "".join(f"{byte:02X}" for byte in packet_data[38 + offset:40 + offset])
-                            comm.setdefault("data_size", int(data_size, 16))
+                            comm.update({"data_size": int(data_size, 16)})
                         elif comm.get("tftp_type") == options_info_data["tftp_type"][int("02", 16)] and counter == 2:
                             data_size = "".join(f"{byte:02X}" for byte in packet_data[38 + offset:40 + offset])
-                            comm.setdefault("data_size", int(data_size, 16))
+                            comm.update({"data_size": int(data_size, 16)})
 
                     if (
                             packet.get("src_ip") == comm.get("dst_ip") and
@@ -514,12 +513,8 @@ elif filter_protocol == "TFTP":
     for comm in complete_communications:
         complete_comm_to_yaml = {
             "number_comm": counter,
-            "data_size": comm.get("data_size"),
-            "tftp_type": comm.get("tftp_type"),
             "src_comm": comm.get("src_ip"),
             "dst_comm": comm.get("dst_ip"),
-            "src_port": comm.get("src_port"),
-            "dst_port": comm.get("dst_port"),
             "packets": comm.get("packets"),
         }
         complete_communications_to_yaml.append(complete_comm_to_yaml)
@@ -529,12 +524,6 @@ elif filter_protocol == "TFTP":
     for comm in partial_communications:
         partial_comm_to_yaml = {
             "number_comm": counter,
-            "data_size": comm.get("data_size"),
-            "tftp_type": comm.get("tftp_type"),
-            "src_comm": comm.get("src_ip"),
-            "dst_comm": comm.get("dst_ip"),
-            "src_port": comm.get("src_port"),
-            "dst_port": comm.get("dst_port"),
             "packets": comm.get("packets"),
         }
         partial_communications_to_yaml.append(partial_comm_to_yaml)
