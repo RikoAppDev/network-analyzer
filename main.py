@@ -68,7 +68,7 @@ def is_packet_from_same_comm(c, looking_packet):
 
 
 def get_active_flags(p_data):
-    flags = bin(p_data[47 + offset])
+    flags = bin(p_data[47 + get_ip_header_offset()])
     flags = flags[2:].zfill(5)
 
     active_flags = []
@@ -569,7 +569,6 @@ elif filter_protocol == "TFTP":
 elif filter_protocol in protocol_filters["tcp_filters"]:
     for packet in packets_to_yaml:
         if packet.get("protocol") == "TCP" and packet.get("app_protocol") == filter_protocol:
-            offset = get_ip_header_offset()
             packet_data = reverse_formatted_hexdump(packet.get("hexa_frame"))
 
             found_in_comm = False
