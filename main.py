@@ -266,7 +266,10 @@ elif filter_protocol == "ARP":
             elif packet.get("arp_opcode") == "REPLY":
                 found_request = False
                 for partial in partial_communications:
-                    if partial.get("src_ip") == packet.get("dst_ip"):
+                    if partial.get("arp_opcode") == "REQUEST" and (
+                            packet.get("src_ip") == partial.get("dst_ip") and
+                            packet.get("dst_ip") == partial.get("src_ip")
+                    ):
                         complete_communications.append(partial)
                         complete_communications.append(packet)
                         partial_communications.remove(partial)
