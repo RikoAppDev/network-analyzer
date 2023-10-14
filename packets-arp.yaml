@@ -1,5 +1,5 @@
 name: PKS2023/24
-pcap_name: vzorky_pcap_na_analyzu/trace-27.pcap
+pcap_name: trace-27.pcap
 filter_name: ARP
 complete_comms:
 - number_comm: 1

@@ -50,6 +50,40 @@ def get_ip_header_offset():
     return header_length_bytes - 20
 
 
+def is_packet_from_same_comm(c, looking_packet):
+    if (
+            looking_packet.get("src_ip") == c.get("dst_ip") and
+            looking_packet.get("dst_ip") == c.get("src_ip") and
+            looking_packet.get("src_port") == c.get("dst_port") and
+            looking_packet.get("dst_port") == c.get("src_port")
+    ) or (
+            looking_packet.get("src_ip") == c.get("src_ip") and
+            looking_packet.get("dst_ip") == c.get("dst_ip") and
+            looking_packet.get("src_port") == c.get("src_port") and
+            looking_packet.get("dst_port") == c.get("dst_port")
+    ):
+        return True
+
+    return False
+
+
+def get_active_flags(p_data):
+    flags = bin(p_data[47 + offset])
+    flags = flags[2:].zfill(5)
+
+    active_flags = []
+    if flags[4] == "1":
+        active_flags.append("FIN")
+    if flags[3] == "1":
+        active_flags.append("SYN")
+    if flags[2] == "1":
+        active_flags.append("RST")
+    if flags[0] == "1":
+        active_flags.append("ACK")
+
+    return active_flags
+
+
 yaml = ruamel.yaml.YAML()
 
 with open(OPTIONS_INFO_FILE, 'r') as yaml_file:
@@ -191,8 +225,7 @@ with open(protocol_filters_file, 'r') as yaml_file:
     protocol_filters = yaml.load(yaml_file)
 
 print("Apply some protocol filter (ESC for no filter) >> ", end="")
-# filter_protocol = input().upper()
-filter_protocol = "TFTP"
+filter_protocol = input().upper()
 
 while filter_protocol not in protocol_filters["protocol_filters"] and filter_protocol != "ESC":
     print(f"Error: protocol {filter_protocol} is not supported as filter!")
@@ -469,17 +502,7 @@ elif filter_protocol == "TFTP":
                             data_size = "".join(f"{byte:02X}" for byte in packet_data[38 + offset:40 + offset])
                             comm.update({"data_size": int(data_size, 16)})
 
-                    if (
-                            packet.get("src_ip") == comm.get("dst_ip") and
-                            packet.get("dst_ip") == comm.get("src_ip") and
-                            packet.get("src_port") == comm.get("dst_port") and
-                            packet.get("dst_port") == comm.get("src_port")
-                    ) or (
-                            packet.get("src_ip") == comm.get("src_ip") and
-                            packet.get("dst_ip") == comm.get("dst_ip") and
-                            packet.get("src_port") == comm.get("src_port") and
-                            packet.get("dst_port") == comm.get("dst_port")
-                    ):
+                    if is_packet_from_same_comm(comm, packet):
                         packet_data = reverse_formatted_hexdump(packet.get("hexa_frame"))
 
                         comm_packets = comm.get("packets")
@@ -541,11 +564,94 @@ elif filter_protocol == "TFTP":
 
     stream_data_into_yaml(f"packets-tftp.yaml", data)
 elif filter_protocol in protocol_filters["tcp_filters"]:
+    for packet in packets_to_yaml:
+        if packet.get("protocol") == "TCP" and packet.get("app_protocol") == filter_protocol:
+            offset = get_ip_header_offset()
+            packet_data = reverse_formatted_hexdump(packet.get("hexa_frame"))
+
+            found_in_comm = False
+            for comm in partial_communications:
+                if is_packet_from_same_comm(comm, packet):
+                    if not comm.get("est"):
+                        est_flags = comm.get("est_flags")
+                        est_flags.append(get_active_flags(packet_data))
+                        comm.update({"est_flags": est_flags})
+
+                        if (
+                                est_flags == [['SYN'], ['SYN', 'ACK'], ['ACK']] or
+                                est_flags == [['SYN'], ['SYN'], ['ACK'], ['ACK']]
+                        ):
+                            comm.update({"est": True})
+
+                    comm_packets: list = comm.get("packets")
+                    comm_packets.append(packet)
+
+                    if "FIN" in get_active_flags(packet_data):
+                        comm.update({"wanna_terminate": True})
+
+                    if comm.get("wanna_terminate"):
+                        trm_flags: list = comm.get("trm_flags")
+                        trm_flags.append(get_active_flags(packet_data))
+                        comm.update({"trm_flags": trm_flags})
+                        comm.update({"trm": True})
+                        if (
+                                trm_flags == [["FIN", "ACK"], ["ACK"], ["FIN", "ACK"], ["ACK"]] or
+                                trm_flags == [["FIN", "ACK"], ["FIN", "ACK"], ["ACK"], ["ACK"]]
+                        ):
+                            complete_communications.append(comm)
+                            partial_communications.remove(comm)
+
+                    if "RST" in get_active_flags(packet_data) and comm.get("est"):
+                        trm_flags: list = comm.get("trm_flags")
+                        trm_flags.append(get_active_flags(packet_data))
+                        comm.update({"trm_flags": trm_flags})
+                        comm.update({"trm": True})
+                        complete_communications.append(comm)
+                        partial_communications.remove(comm)
+
+                    found_in_comm = True
+
+            if not found_in_comm:
+                communication: dict = {
+                    "est": False,
+                    "trm": False,
+                    "wanna_terminate": False,
+                    "est_flags": [get_active_flags(packet_data)],
+                    "trm_flags": [],
+                    "src_ip": packet.get("src_ip"),
+                    "dst_ip": packet.get("dst_ip"),
+                    "src_port": packet.get("src_port"),
+                    "dst_port": packet.get("dst_port"),
+                    "packets": [packet],
+                }
+                partial_communications.append(communication)
+
+    counter = 1
+    for comm in complete_communications:
+        complete_comm_to_yaml = {
+            "number_comm": counter,
+            "src_comm": comm.get("src_ip"),
+            "dst_comm": comm.get("dst_ip"),
+            "packets": comm.get("packets"),
+        }
+        complete_communications_to_yaml.append(complete_comm_to_yaml)
+        counter += 1
+
+    if len(partial_communications) != 0:
+        partial_comm_to_yaml = {
+            "number_comm": 1,
+            "packets": partial_communications[0].get("packets"),
+        }
+        partial_communications_to_yaml.append(partial_comm_to_yaml)
 
     data = {
         'name': 'PKS2023/24',
         'pcap_name': get_pcap_file(),
         'filter_name': filter_protocol,
     }
+    if len(complete_communications_to_yaml) != 0:
+        data.setdefault("complete_comms", complete_communications_to_yaml)
+    if len(partial_communications_to_yaml) != 0:
+        data.setdefault("partial_comms", partial_communications_to_yaml)
 
     stream_data_into_yaml(f"packets-{filter_protocol.lower()}.yaml", data)

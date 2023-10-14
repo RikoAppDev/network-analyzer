@@ -1,3 +1,204 @@
 name: PKS2023/24
-pcap_name: trace-10.pcap
+pcap_name: eth-1.pcap
 filter_name: HTTP
+partial_comms:
+- number_comm: 1
+  packets:
+  - frame_number: 1
+    len_frame_pcap: 54
+    len_frame_medium: 64
+    frame_type: Ethernet II
+    src_mac: 00:02:CF:AB:A2:4C
+    dst_mac: B4:B5:2F:74:CB:AE
+    ether_type: IPv4
+    src_ip: 192.168.1.33
+    dst_ip: 147.175.1.55
+    protocol: TCP
+    src_port: 50032
+    dst_port: 80
+    app_protocol: HTTP
+    hexa_frame: |
+      00 02 CF AB A2 4C B4 B5 2F 74 CB AE 08 00 45 00
+      00 28 0F 76 40 00 80 06 00 00 C0 A8 01 21 93 AF
+      01 37 C3 70 00 50 B0 6B 32 16 7B 24 63 25 50 10
+      01 02 56 CA 00 00
+  - frame_number: 2
+    len_frame_pcap: 782
+    len_frame_medium: 786
+    frame_type: Ethernet II
+    src_mac: 00:02:CF:AB:A2:4C
+    dst_mac: B4:B5:2F:74:CB:AE
+    ether_type: IPv4
+    src_ip: 192.168.1.33
+    dst_ip: 147.175.1.55
+    protocol: TCP
+    src_port: 50032
+    dst_port: 80
+    app_protocol: HTTP
+    hexa_frame: |
+      00 02 CF AB A2 4C B4 B5 2F 74 CB AE 08 00 45 00
+      03 00 0F 77 40 00 80 06 00 00 C0 A8 01 21 93 AF
+      01 37 C3 70 00 50 B0 6B 32 16 7B 24 63 25 50 18
+      01 02 59 A2 00 00 47 45 54 20 2F 62 75 78 75 73
+      2F 67 65 6E 65 72 61 74 65 5F 70 61 67 65 2E 70
+      68 70 3F 70 61 67 65 5F 69 64 3D 31 20 48 54 54
+      50 2F 31 2E 31 0D 0A 41 63 63 65 70 74 3A 20 74
+      65 78 74 2F 68 74 6D 6C 2C 20 61 70 70 6C 69 63
+      61 74 69 6F 6E 2F 78 68 74 6D 6C 2B 78 6D 6C 2C
+      20 2A 2F 2A 0D 0A 41 63 63 65 70 74 2D 4C 61 6E
+      67 75 61 67 65 3A 20 65 6E 2D 55 53 0D 0A 55 73
+      65 72 2D 41 67 65 6E 74 3A 20 4D 6F 7A 69 6C 6C
+      61 2F 35 2E 30 20 28 63 6F 6D 70 61 74 69 62 6C
+      65 3B 20 4D 53 49 45 20 31 30 2E 30 3B 20 57 69
+      6E 64 6F 77 73 20 4E 54 20 36 2E 31 3B 20 57 4F
+      57 36 34 3B 20 54 72 69 64 65 6E 74 2F 36 2E 30
+      29 0D 0A 41 63 63 65 70 74 2D 45 6E 63 6F 64 69
+      6E 67 3A 20 67 7A 69 70 2C 20 64 65 66 6C 61 74
+      65 0D 0A 48 6F 73 74 3A 20 77 77 77 2E 66 63 68
+      70 74 2E 73 74 75 62 61 2E 73 6B 0D 0A 44 4E 54
+      3A 20 31 0D 0A 43 6F 6E 6E 65 63 74 69 6F 6E 3A
+      20 4B 65 65 70 2D 41 6C 69 76 65 0D 0A 43 6F 6F
+      6B 69 65 3A 20 5F 5F 61 74 75 76 63 3D 34 25 37
+      43 31 30 25 32 43 30 25 37 43 31 31 25 32 43 30
+      25 37 43 31 32 25 32 43 30 25 37 43 31 33 25 32
+      43 32 25 37 43 31 34 3B 20 5F 5F 75 74 6D 61 3D
+      31 32 39 35 37 38 32 36 37 2E 37 35 30 30 35 39
+      37 31 31 2E 31 33 35 30 35 30 37 31 31 35 2E 31
+      33 36 34 37 35 36 32 36 39 2E 31 33 36 34 37 35
+      39 35 38 35 2E 35 39 35 3B 20 5F 5F 75 74 6D 7A
+      3D 31 32 39 35 37 38 32 36 37 2E 31 33 35 30 35
+      30 37 31 31 35 2E 31 2E 31 2E 75 74 6D 63 73 72
+      3D 28 64 69 72 65 63 74 29 7C 75 74 6D 63 63 6E
+      3D 28 64 69 72 65 63 74 29 7C 75 74 6D 63 6D 64
+      3D 28 6E 6F 6E 65 29 3B 20 5F 5F 75 74 6D 62 3D
+      31 32 39 35 37 38 32 36 37 2E 31 2E 31 30 2E 31
+      33 36 34 37 35 39 35 38 35 3B 20 5F 5F 75 74 6D
+      61 3D 33 31 35 35 38 32 36 2E 31 31 33 35 38 34
+      38 37 39 37 2E 31 33 35 31 32 37 31 30 36 33 2E
+      31 33 36 34 37 35 36 35 31 34 2E 31 33 36 34 37
+      36 30 37 30 31 2E 36 34 3B 20 5F 5F 75 74 6D 7A
+      3D 33 31 35 35 38 32 36 2E 31 33 36 34 37 36 30
+      37 30 31 2E 36 34 2E 35 39 2E 75 74 6D 63 73 72
+      3D 66 63 68 70 74 2E 73 74 75 62 61 2E 73 6B 7C
+      75 74 6D 63 63 6E 3D 28 72 65 66 65 72 72 61 6C
+      29 7C 75 74 6D 63 6D 64 3D 72 65 66 65 72 72 61
+      6C 7C 75 74 6D 63 63 74 3D 2F 3B 20 5F 5F 75 74
+      6D 62 3D 33 31 35 35 38 32 36 2E 38 2E 31 30 2E
+      31 33 36 34 37 36 30 37 30 31 0D 0A 0D 0A
+  - frame_number: 3
+    len_frame_pcap: 60
+    len_frame_medium: 64
+    frame_type: Ethernet II
+    src_mac: B4:B5:2F:74:CB:AE
+    dst_mac: 00:02:CF:AB:A2:4C
+    ether_type: IPv4
+    src_ip: 147.175.1.55
+    dst_ip: 192.168.1.33
+    protocol: TCP
+    src_port: 80
+    dst_port: 50032
+    app_protocol: HTTP
+    hexa_frame: |
+      B4 B5 2F 74 CB AE 00 02 CF AB A2 4C 08 00 45 00
+      00 28 3C 0F 40 00 39 06 AF 11 93 AF 01 37 C0 A8
+      01 21 00 50 C3 70 7B 24 63 25 B0 6B 34 EE 50 10
+      00 7E D1 42 00 00 00 00 00 00 00 00
+  - frame_number: 5
+    len_frame_pcap: 484
+    len_frame_medium: 488
+    frame_type: Ethernet II
+    src_mac: B4:B5:2F:74:CB:AE
+    dst_mac: 00:02:CF:AB:A2:4C
+    ether_type: IPv4
+    src_ip: 147.175.1.55
+    dst_ip: 192.168.1.33
+    protocol: TCP
+    src_port: 80
+    dst_port: 50032
+    app_protocol: HTTP
+    hexa_frame: |
+      B4 B5 2F 74 CB AE 00 02 CF AB A2 4C 08 00 45 00
+      01 D6 3C 10 40 00 39 06 AD 62 93 AF 01 37 C0 A8
+      01 21 00 50 C3 70 7B 24 63 25 B0 6B 34 EE 50 18
+      00 7E 76 9A 00 00 48 54 54 50 2F 31 2E 30 20 33
+      30 31 20 4D 6F 76 65 64 20 50 65 72 6D 61 6E 65
+      6E 74 6C 79 0D 0A 44 61 74 65 3A 20 53 75 6E 2C
+      20 33 31 20 4D 61 72 20 32 30 31 33 20 32 30 3A
+      32 32 3A 31 33 20 47 4D 54 0D 0A 53 65 72 76 65
+      72 3A 20 41 70 61 63 68 65 2F 32 2E 32 2E 31 35
+      20 28 43 65 6E 74 4F 53 29 0D 0A 58 2D 50 6F 77
+      65 72 65 64 2D 42 79 3A 20 50 48 50 2F 35 2E 33
+      2E 33 0D 0A 53 65 74 2D 43 6F 6F 6B 69 65 3A 20
+      62 75 78 75 73 5F 73 74 75 5F 66 63 68 70 74 3D
+      37 74 35 36 35 39 31 30 31 38 73 34 66 31 33 72
+      66 68 32 35 75 64 37 73 6E 37 3B 20 70 61 74 68
+      3D 2F 0D 0A 45 78 70 69 72 65 73 3A 20 54 68 75
+      2C 20 31 39 20 4E 6F 76 20 31 39 38 31 20 30 38
+      3A 35 32 3A 30 30 20 47 4D 54 0D 0A 43 61 63 68
+      65 2D 43 6F 6E 74 72 6F 6C 3A 20 6E 6F 2D 73 74
+      6F 72 65 2C 20 6E 6F 2D 63 61 63 68 65 2C 20 6D
+      75 73 74 2D 72 65 76 61 6C 69 64 61 74 65 2C 20
+      70 6F 73 74 2D 63 68 65 63 6B 3D 30 2C 20 70 72
+      65 2D 63 68 65 63 6B 3D 30 0D 0A 50 72 61 67 6D
+      61 3A 20 6E 6F 2D 63 61 63 68 65 0D 0A 4C 6F 63
+      61 74 69 6F 6E 3A 20 68 74 74 70 3A 2F 2F 77 77
+      77 2E 66 63 68 70 74 2E 73 74 75 62 61 2E 73 6B
+      2F 0D 0A 43 6F 6E 74 65 6E 74 2D 4C 65 6E 67 74
+      68 3A 20 30 0D 0A 43 6F 6E 6E 65 63 74 69 6F 6E
+      3A 20 63 6C 6F 73 65 0D 0A 43 6F 6E 74 65 6E 74
+      2D 54 79 70 65 3A 20 74 65 78 74 2F 68 74 6D 6C
+      0D 0A 0D 0A
+  - frame_number: 6
+    len_frame_pcap: 54
+    len_frame_medium: 64
+    frame_type: Ethernet II
+    src_mac: 00:02:CF:AB:A2:4C
+    dst_mac: B4:B5:2F:74:CB:AE
+    ether_type: IPv4
+    src_ip: 192.168.1.33
+    dst_ip: 147.175.1.55
+    protocol: TCP
+    src_port: 50032
+    dst_port: 80
+    app_protocol: HTTP
+    hexa_frame: |
+      00 02 CF AB A2 4C B4 B5 2F 74 CB AE 08 00 45 00
+      00 28 0F 79 40 00 80 06 00 00 C0 A8 01 21 93 AF
+      01 37 C3 70 00 50 B0 6B 34 EE 7B 24 64 D3 50 11
+      01 00 56 CA 00 00
+  - frame_number: 7
+    len_frame_pcap: 60
+    len_frame_medium: 64
+    frame_type: Ethernet II
+    src_mac: B4:B5:2F:74:CB:AE
+    dst_mac: 00:02:CF:AB:A2:4C
+    ether_type: IPv4
+    src_ip: 147.175.1.55
+    dst_ip: 192.168.1.33
+    protocol: TCP
+    src_port: 80
+    dst_port: 50032
+    app_protocol: HTTP
+    hexa_frame: |
+      B4 B5 2F 74 CB AE 00 02 CF AB A2 4C 08 00 45 00
+      00 28 3C 11 40 00 39 06 AF 0F 93 AF 01 37 C0 A8
+      01 21 00 50 C3 70 7B 24 64 D3 B0 6B 34 EE 50 11
+      00 7E CF 93 00 00 00 00 00 00 00 00
+  - frame_number: 8
+    len_frame_pcap: 54
+    len_frame_medium: 64
+    frame_type: Ethernet II
+    src_mac: 00:02:CF:AB:A2:4C
+    dst_mac: B4:B5:2F:74:CB:AE
+    ether_type: IPv4
+    src_ip: 192.168.1.33
+    dst_ip: 147.175.1.55
+    protocol: TCP
+    src_port: 50032
+    dst_port: 80
+    app_protocol: HTTP
+    hexa_frame: |
+      00 02 CF AB A2 4C B4 B5 2F 74 CB AE 08 00 45 00
+      00 28 0F 7A 40 00 80 06 00 00 C0 A8 01 21 93 AF
+      01 37 C3 70 00 50 B0 6B 34 EF 7B 24 64 D4 50 14
+      00 00 56 CA 00 00
