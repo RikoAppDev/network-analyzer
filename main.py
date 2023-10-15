@@ -1,12 +1,38 @@
 from scapy.all import *
 import binascii
 import ruamel.yaml
+import os
 
-from constants import *
+import constants
+
+
+def find_file(file_name):
+    directory = os.path.dirname(os.path.abspath(__file__ or ''))
+
+    file_paths = []
+    for root, dirs, files in os.walk(directory):
+        if file_name in files:
+            file_paths.append(os.path.join(root, file_name))
+    return file_paths
+
+
+def set_file(file):
+    file_paths = find_file(file)
+    if len(file_paths) > 1:
+        print("WARNING!\nFile found at the following locations within your project structure:")
+        for path in file_paths:
+            print(path)
+        print("Make sure there are no file name duplicates!")
+        exit()
+    elif len(file_paths) == 1:
+        constants.PCAP_FILE = file_paths[0]
+        return True
+
+    return False
 
 
 def get_pcap_file():
-    return PCAP_FILE.split("/")[len(PCAP_FILE.split("/")) - 1]
+    return constants.PCAP_FILE.split("\\")[len(constants.PCAP_FILE.split("\\")) - 1]
 
 
 def stream_data_into_yaml(yaml_file_path, data_to_stream):
@@ -14,8 +40,8 @@ def stream_data_into_yaml(yaml_file_path, data_to_stream):
         try:
             yaml.dump(data_to_stream, file)
             print(f'\nData has been successfully streamed to {yaml_file_path}')
-        except Exception as e:
-            print(f'\n!!!Error while streaming data to {yaml_file_path}, error: {e}!!!')
+        except Exception as exc:
+            print(f'\n!!!Error while streaming data to {yaml_file_path}, error: {exc}!!!')
 
 
 def formatted_hexdump(hex_dump):
@@ -39,9 +65,9 @@ def append_mac_addresses():
     packet_info.setdefault("dst_mac", destination_mac)
 
 
-def append_ip_addresses(source_ip, dest_ip):
-    packet_info.setdefault("src_ip", source_ip)
-    packet_info.setdefault("dst_ip", dest_ip)
+def append_ip_addresses(s_ip, d_ip):
+    packet_info.setdefault("src_ip", s_ip)
+    packet_info.setdefault("dst_ip", d_ip)
 
 
 def get_ip_header_offset():
@@ -86,10 +112,23 @@ def get_active_flags(p_data):
 
 yaml = ruamel.yaml.YAML()
 
-with open(OPTIONS_INFO_FILE, 'r') as yaml_file:
+with open(constants.OPTIONS_INFO_FILE, 'r') as yaml_file:
     options_info_data = yaml.load(yaml_file)
 
-packets = rdpcap(PCAP_FILE)
+
+def append_file_type(file):
+    if file.endswith(".pcap"):
+        return file
+    else:
+        return file + ".pcap"
+
+
+pcap_file = append_file_type(input('Input "pcap" file >> '))
+while not set_file(pcap_file):
+    print(f"!!!Error!!!\nFile {pcap_file} not found within your project structure!")
+    pcap_file = append_file_type(input('Input "pcap" file >> '))
+
+packets = rdpcap(constants.PCAP_FILE)
 counter = 0
 packets_to_yaml = []
 
@@ -224,14 +263,13 @@ protocol_filters_file = "protocol_filters.yml"
 with open(protocol_filters_file, 'r') as yaml_file:
     protocol_filters = yaml.load(yaml_file)
 
-print("Apply some protocol filter (ESC for no filter) >> ", end="")
-filter_protocol = input().upper()
+print("Supported filters: HTTP | HTTPS | TELNET | SSH | FTP-CONTROL | FTP-DATA | TFTP | ICMP | ARP")
+filter_protocol = input("Apply some protocol filter (ESC for no filter) >> ").upper()
 
 while filter_protocol not in protocol_filters["protocol_filters"] and filter_protocol != "ESC":
     print(f"Error: protocol {filter_protocol} is not supported as filter!")
     print("Supported filters: HTTP | HTTPS | TELNET | SSH | FTP-CONTROL | FTP-DATA | TFTP | ICMP | ARP")
-    print("Apply some protocol filter (ESC for no filter) >> ", end="")
-    filter_protocol = input().upper()
+    filter_protocol = input("Apply some protocol filter (ESC for no filter) >> ").upper()
 
 complete_communications = []
 partial_communications = []
