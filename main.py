@@ -6,6 +6,7 @@ import os
 import constants
 
 
+# Finds file between project structure
 def find_file(file_name):
     directory = os.path.dirname(os.path.abspath(__file__ or ''))
 
@@ -16,6 +17,7 @@ def find_file(file_name):
     return file_paths
 
 
+# Sets file name
 def set_file(file):
     file_paths = find_file(file)
     if len(file_paths) > 1:
@@ -31,10 +33,20 @@ def set_file(file):
     return False
 
 
+# Returns file name from whole file path
 def get_pcap_file():
     return constants.PCAP_FILE.split("\\")[len(constants.PCAP_FILE.split("\\")) - 1]
 
 
+# Returns file name with supported file type if missing
+def append_file_type(file):
+    if file.endswith(".pcap"):
+        return file
+    else:
+        return file + ".pcap"
+
+
+# Outputs data into yaml file
 def stream_data_into_yaml(yaml_file_path, data_to_stream):
     with open(yaml_file_path, 'w') as file:
         try:
@@ -44,6 +56,7 @@ def stream_data_into_yaml(yaml_file_path, data_to_stream):
             print(f'\n!!!Error while streaming data to {yaml_file_path}, error: {exc}!!!')
 
 
+# Returns formatted hex dump from byte array
 def formatted_hexdump(hex_dump):
     hex_dump_str = " ".join(format(byte, "02X") for byte in hex_dump)
     hex_dump_str = [hex_dump_str[i:i + 47] for i in range(0, len(hex_dump_str), 48)]
@@ -52,6 +65,7 @@ def formatted_hexdump(hex_dump):
     return hex_dump_str
 
 
+# Returns byte array from formatted hex dump
 def reverse_formatted_hexdump(hex_dump_str):
     hex_dump_str = hex_dump_str.replace('\n', '').replace(' ', '')
     hex_pairs = [hex_dump_str[i:i + 2] for i in range(0, len(hex_dump_str), 2)]
@@ -60,22 +74,26 @@ def reverse_formatted_hexdump(hex_dump_str):
     return bytes_data
 
 
+# Appends information about mac addresses to its packet
 def append_mac_addresses():
     packet_info.setdefault("src_mac", source_mac)
     packet_info.setdefault("dst_mac", destination_mac)
 
 
+# Appends information about IPv4 addresses to its packet
 def append_ip_addresses(s_ip, d_ip):
     packet_info.setdefault("src_ip", s_ip)
     packet_info.setdefault("dst_ip", d_ip)
 
 
+# Returns offset value form IPv4 header
 def get_ip_header_offset():
     ihl = (packet_data[14] & 0x0F)
     header_length_bytes = ihl * 4
     return header_length_bytes - 20
 
 
+# Checks if packet is from the same communication
 def is_packet_from_same_comm(c, looking_packet):
     if (
             looking_packet.get("src_ip") == c.get("dst_ip") and
@@ -89,10 +107,21 @@ def is_packet_from_same_comm(c, looking_packet):
             looking_packet.get("dst_port") == c.get("dst_port")
     ):
         return True
+    return False
+
+
+# Control possible end of comm
+def has_fin_pattern(flag_list):
+    if flag_list[0] == ["FIN", "ACK"]:
+        if flag_list[1] == ["ACK"]:
+            if flag_list[len(flag_list) - 2] == ["FIN", "ACK"]:
+                if flag_list[len(flag_list) - 1] == ["ACK"]:
+                    return True
 
     return False
 
 
+# Returns needed active flags
 def get_active_flags(p_data):
     flags = bin(p_data[47 + get_ip_header_offset()])
     flags = flags[2:].zfill(5)
@@ -115,14 +144,6 @@ yaml = ruamel.yaml.YAML()
 with open(constants.OPTIONS_INFO_FILE, 'r') as yaml_file:
     options_info_data = yaml.load(yaml_file)
 
-
-def append_file_type(file):
-    if file.endswith(".pcap"):
-        return file
-    else:
-        return file + ".pcap"
-
-
 pcap_file = append_file_type(input('Input "pcap" file >> '))
 while not set_file(pcap_file):
     print(f"!!!Error!!!\nFile {pcap_file} not found within your project structure!")
@@ -135,6 +156,7 @@ packets_to_yaml = []
 ip_nodes_to_yaml = []
 ip_nodes = {}
 
+# Loops through all packets and make appropriate analysis
 for packet in packets:
     packet_data = binascii.unhexlify(bytes_hex(packet))
     counter += 1
@@ -177,7 +199,7 @@ for packet in packets:
             target_protocol_addr_str = '.'.join(map(str, target_protocol_addr))
             append_ip_addresses(source_protocol_addr_str, target_protocol_addr_str)
 
-        # IP version
+        # IPv4 version
         elif int(ether_type, 16) == 2048:
             packet_info.setdefault("ether_type", options_info_data["ether_types"][int(ether_type, 16)])
 
@@ -277,6 +299,7 @@ complete_communications_to_yaml = []
 partial_communications_to_yaml = []
 
 if filter_protocol == "ESC":
+    # Find all communications between different nodes
     for ip in ip_nodes:
         node = {
             "node": ip,
@@ -316,6 +339,7 @@ elif filter_protocol == "ARP":
                 if not found_request:
                     partial_communications.append(packet)
 
+    # Format communications data into suitable output format
     if len(complete_communications) != 0:
         complete_comm_info: dict = {
             "number_comm": 1,
@@ -466,6 +490,7 @@ elif filter_protocol == "ICMP":
                 }
                 partial_communications.append(comm_info)
 
+    # Format communications data into suitable output format
     counter = 1
     for comm in complete_communications:
         complete_comm_to_yaml = {
@@ -573,6 +598,7 @@ elif filter_protocol == "TFTP":
                                 end_of_comm = True
                         counter += 1
 
+    # Format communications data into suitable output format
     counter = 1
     for comm in complete_communications:
         complete_comm_to_yaml = {
@@ -611,6 +637,7 @@ elif filter_protocol in protocol_filters["tcp_filters"]:
 
             found_in_comm = False
             for comm in partial_communications:
+                # Find ongoing communication
                 if is_packet_from_same_comm(comm, packet):
                     if not comm.get("est"):
                         est_flags = comm.get("est_flags")
@@ -626,6 +653,7 @@ elif filter_protocol in protocol_filters["tcp_filters"]:
                     comm_packets: list = comm.get("packets")
                     comm_packets.append(packet)
 
+                    # Check if some device want to finish communication
                     if "FIN" in get_active_flags(packet_data):
                         comm.update({"wanna_terminate": True})
 
@@ -635,8 +663,8 @@ elif filter_protocol in protocol_filters["tcp_filters"]:
                         comm.update({"trm_flags": trm_flags})
                         comm.update({"trm": True})
                         if (
-                                trm_flags == [["FIN", "ACK"], ["ACK"], ["FIN", "ACK"], ["ACK"]] or
-                                trm_flags == [["FIN", "ACK"], ["FIN", "ACK"], ["ACK"], ["ACK"]]
+                                (len(trm_flags) >= 4 and has_fin_pattern(trm_flags)) or
+                                trm_flags == [["FIN", "ACK"], ["FIN", "ACK"], ["ACK"]]
                         ):
                             complete_communications.append(comm)
                             partial_communications.remove(comm)
@@ -651,6 +679,7 @@ elif filter_protocol in protocol_filters["tcp_filters"]:
 
                     found_in_comm = True
 
+            # Create communication if is new
             if not found_in_comm:
                 communication: dict = {
                     "est": False,
@@ -666,6 +695,7 @@ elif filter_protocol in protocol_filters["tcp_filters"]:
                 }
                 partial_communications.append(communication)
 
+    # Format communications data into suitable output format
     counter = 1
     for comm in complete_communications:
         complete_comm_to_yaml = {
@@ -677,12 +707,14 @@ elif filter_protocol in protocol_filters["tcp_filters"]:
         complete_communications_to_yaml.append(complete_comm_to_yaml)
         counter += 1
 
-    if len(partial_communications) != 0:
-        partial_comm_to_yaml = {
-            "number_comm": 1,
-            "packets": partial_communications[0].get("packets"),
-        }
-        partial_communications_to_yaml.append(partial_comm_to_yaml)
+    for comm in partial_communications:
+        if comm.get("est") or comm.get("trm"):
+            partial_comm_to_yaml = {
+                "number_comm": 1,
+                "packets": comm.get("packets"),
+            }
+            partial_communications_to_yaml.append(partial_comm_to_yaml)
+            break
 
     data = {
         'name': 'PKS2023/24',
