@@ -280,9 +280,7 @@ for packet in packets:
     packets_to_yaml.append(packet_info)
 
 # Filter and stream to yaml file
-protocol_filters_file = "protocol_filters.yml"
-
-with open(protocol_filters_file, 'r') as yaml_file:
+with open(constants.PROTOCOL_FILTERS_FILE, 'r') as yaml_file:
     protocol_filters = yaml.load(yaml_file)
 
 print("Supported filters: HTTP | HTTPS | TELNET | SSH | FTP-CONTROL | FTP-DATA | TFTP | ICMP | ARP")
@@ -586,7 +584,7 @@ elif filter_protocol == "TFTP":
                                     packet.get("dst_ip") == comm.get("src_ip") and
                                     packet.get("src_port") == comm.get("dst_port") and
                                     packet.get("dst_port") == comm.get("src_port")
-                            ) and int(packet_data_size, 16) < comm.get("data_size"):
+                            ) and (int(packet_data_size, 16) < comm.get("data_size") or int(packet_data_size, 16) < 512):
                                 end_of_comm = True
                         elif comm.get("tftp_type") == options_info_data["tftp_type"][int("02", 16)]:
                             if (
@@ -594,7 +592,7 @@ elif filter_protocol == "TFTP":
                                     packet.get("dst_ip") == comm.get("dst_ip") and
                                     packet.get("src_port") == comm.get("src_port") and
                                     packet.get("dst_port") == comm.get("dst_port")
-                            ) and int(packet_data_size, 16) < comm.get("data_size"):
+                            ) and (int(packet_data_size, 16) < comm.get("data_size") or int(packet_data_size, 16) < 512):
                                 end_of_comm = True
                         counter += 1
 
@@ -662,7 +660,8 @@ elif filter_protocol in protocol_filters["tcp_filters"]:
                         trm_flags.append(get_active_flags(packet_data))
                         comm.update({"trm_flags": trm_flags})
                         comm.update({"trm": True})
-                        if (
+
+                        if comm.get("est") and (
                                 (len(trm_flags) >= 4 and has_fin_pattern(trm_flags)) or
                                 trm_flags == [["FIN", "ACK"], ["FIN", "ACK"], ["ACK"]]
                         ):
