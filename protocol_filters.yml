@@ -8,6 +8,7 @@ protocol_filters:
   - TFTP
   - ARP
   - ICMP
+  - X
 
 tcp_filters:
   - HTTP

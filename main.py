@@ -283,12 +283,14 @@ for packet in packets:
 with open(constants.PROTOCOL_FILTERS_FILE, 'r') as yaml_file:
     protocol_filters = yaml.load(yaml_file)
 
-print("Supported filters: HTTP | HTTPS | TELNET | SSH | FTP-CONTROL | FTP-DATA | TFTP | ICMP | ARP")
+print(
+    "Supported filters: HTTP | HTTPS | TELNET | SSH | FTP-CONTROL | FTP-DATA | TFTP | ICMP | ARP | X (additional implementation ftp-data)")
 filter_protocol = input("Apply some protocol filter (ESC for no filter) >> ").upper()
 
 while filter_protocol not in protocol_filters["protocol_filters"] and filter_protocol != "ESC":
     print(f"Error: protocol {filter_protocol} is not supported as filter!")
-    print("Supported filters: HTTP | HTTPS | TELNET | SSH | FTP-CONTROL | FTP-DATA | TFTP | ICMP | ARP")
+    print(
+        "Supported filters: HTTP | HTTPS | TELNET | SSH | FTP-CONTROL | FTP-DATA | TFTP | ICMP | ARP | X (additional implementation ftp-data)")
     filter_protocol = input("Apply some protocol filter (ESC for no filter) >> ").upper()
 
 complete_communications = []
@@ -584,7 +586,8 @@ elif filter_protocol == "TFTP":
                                     packet.get("dst_ip") == comm.get("src_ip") and
                                     packet.get("src_port") == comm.get("dst_port") and
                                     packet.get("dst_port") == comm.get("src_port")
-                            ) and (int(packet_data_size, 16) < comm.get("data_size") or int(packet_data_size, 16) < 512):
+                            ) and (int(packet_data_size, 16) < comm.get("data_size") or int(packet_data_size,
+                                                                                            16) < 512):
                                 end_of_comm = True
                         elif comm.get("tftp_type") == options_info_data["tftp_type"][int("02", 16)]:
                             if (
@@ -592,7 +595,8 @@ elif filter_protocol == "TFTP":
                                     packet.get("dst_ip") == comm.get("dst_ip") and
                                     packet.get("src_port") == comm.get("src_port") and
                                     packet.get("dst_port") == comm.get("dst_port")
-                            ) and (int(packet_data_size, 16) < comm.get("data_size") or int(packet_data_size, 16) < 512):
+                            ) and (int(packet_data_size, 16) < comm.get("data_size") or int(packet_data_size,
+                                                                                            16) < 512):
                                 end_of_comm = True
                         counter += 1
 
@@ -726,3 +730,19 @@ elif filter_protocol in protocol_filters["tcp_filters"]:
         data.setdefault("partial_comms", partial_communications_to_yaml)
 
     stream_data_into_yaml(f"packets-{filter_protocol.lower()}.yaml", data)
+elif filter_protocol == "X":
+    ftp_data_packets = []
+
+    for packet in packets_to_yaml:
+        if packet.get("protocol") == "TCP" and packet.get("app_protocol") == "FTP-DATA":
+            if packet.get("len_frame_medium") > 82:
+                ftp_data_packets.append(packet)
+
+    data = {
+        'name': 'PKS2023/24',
+        'pcap_name': get_pcap_file(),
+        'packets': ftp_data_packets,
+        'number_frames': len(ftp_data_packets)
+    }
+
+    stream_data_into_yaml("doimplementacia-packets-ftp-data.yaml", data)
